@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phototeditor-frontend-depl
+spec:
+  selector:
+    matchLabels:
+      app: photoeditor-frontend-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: photoeditor-frontend-app
+    spec:
+      imagePullSecrets:
+      - name: ghcr-login-secret
+      containers:
+      - name: frontend
+        image: ghcr.io/xlab-classes/frontend_image:latest
+        resources:
+          limits:
+            cpu: "0.5" # Limit the pod to use a maximum of 0.5 CPU cores
+            memory: "1400Mi" # Limit the pod to use a maximum of 512 megabytes of memory
+          requests:
+            cpu: "0.2" # Request at least 0.2 CPU cores for the pod
+            memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: phototeditor-frontend-servc
+spec: 
+  type: NodePort
+  selector: 
+    app: photoeditor-frontend-app
+  ports:
+  - name: my-app
+    port: 3000
+    nodePort: 31110
+    targetPort: 3000
+
